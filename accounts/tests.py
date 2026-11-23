@@ -152,3 +152,89 @@ class DoctorDirectoryTests(TestCase):
         response = self.client.get(reverse("accounts:dashboard"))
 
         self.assertRedirects(response, reverse("accounts:doctor_list"))
+
+
+class DoctorDetailTests(TestCase):
+    def setUp(self):
+        self.patient_user = User.objects.create_user(
+            username="profile_viewer",
+            password="Strong-Test-Password-2026",
+        )
+        self.clinic = Clinic.objects.create(
+            name="کلینیک مهر",
+            address="تبریز، خیابان آزادی، پلاک ۱۰",
+            phone_number="04112345678",
+        )
+        doctor_user = User.objects.create_user(
+            username="doctor_profile",
+            password="Strong-Test-Password-2026",
+            first_name="سارا",
+            last_name="احمدی",
+        )
+        self.doctor = Doctor.objects.create(
+            user=doctor_user,
+            clinic=self.clinic,
+            specialty="قلب و عروق",
+            medical_system_number="123456",
+        )
+
+    def test_doctor_detail_requires_login(self):
+        response = self.client.get(
+            reverse("accounts:doctor_detail", args=[self.doctor.id])
+        )
+        expected = (
+            f"{reverse('accounts:login')}?next="
+            f"{reverse('accounts:doctor_detail', args=[self.doctor.id])}"
+        )
+        self.assertRedirects(response, expected)
+
+    def test_doctor_detail_shows_doctor_and_clinic_information(self):
+        self.client.force_login(self.patient_user)
+        response = self.client.get(
+            reverse("accounts:doctor_detail", args=[self.doctor.id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "دکتر سارا احمدی")
+        self.assertContains(response, "قلب و عروق")
+        self.assertContains(response, "123456")
+        self.assertContains(response, "کلینیک مهر")
+        self.assertContains(response, "تبریز، خیابان آزادی، پلاک ۱۰")
+        self.assertContains(response, "04112345678")
+
+    def test_doctor_list_links_to_doctor_detail(self):
+        self.client.force_login(self.patient_user)
+        response = self.client.get(reverse("accounts:doctor_list"))
+
+        self.assertContains(
+            response,
+            reverse("accounts:doctor_detail", args=[self.doctor.id]),
+        )
+
+    def test_unknown_doctor_returns_404(self):
+        self.client.force_login(self.patient_user)
+        response = self.client.get(
+            reverse("accounts:doctor_detail", args=[99999])
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_inactive_doctor_profile_returns_404(self):
+        self.doctor.user.is_active = False
+        self.doctor.user.save(update_fields=["is_active"])
+        self.client.force_login(self.patient_user)
+
+        response = self.client.get(
+            reverse("accounts:doctor_detail", args=[self.doctor.id])
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_doctor_without_clinic_has_fallback_message(self):
+        self.doctor.clinic = None
+        self.doctor.save(update_fields=["clinic"])
+        self.client.force_login(self.patient_user)
+
+        response = self.client.get(
+            reverse("accounts:doctor_detail", args=[self.doctor.id])
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "اطلاعات کلینیک برای این پزشک هنوز ثبت نشده است.")

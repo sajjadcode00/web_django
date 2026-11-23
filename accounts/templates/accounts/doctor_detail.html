@@ -1,0 +1,102 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+
+{% block title %}پروفایل پزشک | وب‌دکتر{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'accounts/css/doctors.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/doctor_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="doctor-profile-page" aria-labelledby="doctor-profile-title">
+    <a class="profile-back-link" href="{% url 'accounts:doctor_list' %}">
+        <span aria-hidden="true">→</span> بازگشت به فهرست پزشکان
+    </a>
+
+    <header class="profile-hero">
+        <div class="profile-avatar" aria-hidden="true">
+            {{ doctor.user.first_name|slice:":1" }}{{ doctor.user.last_name|slice:":1" }}
+        </div>
+        <div class="profile-hero-copy">
+            <span class="profile-eyebrow">پروفایل پزشک در وب‌دکتر</span>
+            <h1 id="doctor-profile-title">دکتر {{ doctor.user.get_full_name|default:doctor.user.username }}</h1>
+            <span class="profile-specialty">{{ doctor.specialty }}</span>
+            <p>اطلاعات تخصصی و محل فعالیت این پزشک را در این صفحه مشاهده می‌کنی.</p>
+        </div>
+        <div class="profile-status"><span></span> پزشک فعال</div>
+    </header>
+
+    <div class="profile-content-grid">
+        <section class="profile-info-card" aria-labelledby="doctor-info-heading">
+            <div class="profile-section-heading">
+                <span class="profile-section-icon" aria-hidden="true">✚</span>
+                <div>
+                    <h2 id="doctor-info-heading">اطلاعات پزشک</h2>
+                    <p>مشخصات ثبت‌شده در سامانه</p>
+                </div>
+            </div>
+
+            <div class="profile-data-list">
+                <div class="profile-data-row">
+                    <span>نام و نام خانوادگی</span>
+                    <strong>دکتر {{ doctor.user.get_full_name|default:doctor.user.username }}</strong>
+                </div>
+                <div class="profile-data-row">
+                    <span>تخصص</span>
+                    <strong>{{ doctor.specialty }}</strong>
+                </div>
+                <div class="profile-data-row">
+                    <span>شماره نظام پزشکی</span>
+                    <strong dir="ltr">{{ doctor.medical_system_number }}</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="profile-clinic-card" aria-labelledby="clinic-info-heading">
+            <div class="profile-section-heading">
+                <span class="profile-section-icon clinic-section-icon" aria-hidden="true">⌖</span>
+                <div>
+                    <h2 id="clinic-info-heading">اطلاعات کلینیک</h2>
+                    <p>محل فعالیت پزشک</p>
+                </div>
+            </div>
+
+            {% if doctor.clinic %}
+                <div class="clinic-profile-name">{{ doctor.clinic.name }}</div>
+                <div class="clinic-detail-row">
+                    <span class="clinic-detail-icon" aria-hidden="true">⌖</span>
+                    <div>
+                        <small>نشانی کلینیک</small>
+                        <strong>{{ doctor.clinic.address|linebreaksbr }}</strong>
+                    </div>
+                </div>
+                <div class="clinic-detail-row">
+                    <span class="clinic-detail-icon" aria-hidden="true">☎</span>
+                    <div>
+                        <small>شماره تماس</small>
+                        <a href="tel:{{ doctor.clinic.phone_number }}" dir="ltr">{{ doctor.clinic.phone_number }}</a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="clinic-not-set">
+                    <span aria-hidden="true">ⓘ</span>
+                    <p>اطلاعات کلینیک برای این پزشک هنوز ثبت نشده است.</p>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <section class="profile-booking-panel" aria-labelledby="booking-panel-heading">
+        <div>
+            <span class="booking-panel-kicker">قدم بعدی</span>
+            <h2 id="booking-panel-heading">برای دریافت نوبت آماده‌ای؟</h2>
+            <p>تاریخ و ساعت موردنظرت را انتخاب کن تا درخواست نوبت برای کلینیک ارسال شود.</p>
+        </div>
+        <a class="profile-booking-button" href="{% url 'bookings:create' doctor.id %}">
+            رزرو نوبت این پزشک
+            <span aria-hidden="true">←</span>
+        </a>
+    </section>
+</section>
+{% endblock %}

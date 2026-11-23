@@ -1,7 +1,7 @@
 {% extends 'accounts/base_auth.html' %}
 {% load static %}
 
-{% block title %}پزشکان | دکتریار{% endblock %}
+{% block title %}پزشکان | وب‌دکتر{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'accounts/css/doctors.css' %}">
@@ -13,7 +13,7 @@
         <div class="directory-intro">
             <span class="directory-kicker">انتخاب آگاهانه، مراقبت بهتر</span>
             <h1 id="directory-title">پزشک مورد نظرت رو پیدا کن</h1>
-            <p>فهرست پزشکان دکتریار رو ببین و برای انتخاب پزشک مناسب، تخصص و محل فعالیتش رو بررسی کن.</p>
+            <p>فهرست پزشکان وب‌دکتر رو ببین و برای انتخاب پزشک مناسب، تخصص و محل فعالیتش رو بررسی کن.</p>
         </div>
 
         <div class="directory-count" aria-label="تعداد پزشکان فعال">
@@ -39,7 +39,7 @@
                         <div class="doctor-avatar" aria-hidden="true">
                             {{ doctor.user.first_name|slice:":1" }}{{ doctor.user.last_name|slice:":1" }}
                         </div>
-                        <span class="doctor-label">پزشک دکتریار</span>
+                        <span class="doctor-label">پزشک وب‌دکتر</span>
                     </div>
 
                     <div class="doctor-information">
@@ -66,8 +66,10 @@
                     {% endif %}
 
                     <div class="doctor-card-footer">
-                        <span>اطلاعات بیشتر در مرحله بعد</span>
-                        <span class="footer-arrow" aria-hidden="true">←</span>
+                        <a class="doctor-detail-link" href="{% url 'accounts:doctor_detail' doctor.id %}">
+                            مشاهده پروفایل پزشک
+                            <span class="footer-arrow" aria-hidden="true">←</span>
+                        </a>
                     </div>
                 </article>
             {% endfor %}

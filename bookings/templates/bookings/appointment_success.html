@@ -1,0 +1,54 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+
+{% block title %}ثبت درخواست نوبت | وب‌دکتر{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'bookings/css/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="booking-success-page" aria-labelledby="booking-success-title">
+    <div class="booking-success-icon" aria-hidden="true">✓</div>
+    <span class="booking-card-kicker">وب‌دکتر</span>
+    <h1 id="booking-success-title">درخواست نوبت ثبت شد</h1>
+    <p class="booking-success-intro">درخواست شما با موفقیت در سامانه ثبت شده و در انتظار تأیید کلینیک است.</p>
+
+    <div class="booking-receipt">
+        <div class="booking-receipt-row">
+            <span>پزشک</span>
+            <strong>دکتر {{ appointment.doctor.user.get_full_name|default:appointment.doctor.user.username }}</strong>
+        </div>
+        <div class="booking-receipt-row">
+            <span>تخصص</span>
+            <strong>{{ appointment.doctor.specialty }}</strong>
+        </div>
+        {% if appointment.doctor.clinic %}
+        <div class="booking-receipt-row">
+            <span>کلینیک</span>
+            <strong>{{ appointment.doctor.clinic.name }}</strong>
+        </div>
+        {% endif %}
+        <div class="booking-receipt-row">
+            <span>تاریخ مراجعه</span>
+            <strong dir="ltr">{{ appointment.appointment_date|date:"Y/m/d" }}</strong>
+        </div>
+        <div class="booking-receipt-row">
+            <span>ساعت مراجعه</span>
+            <strong dir="ltr">{{ appointment.appointment_time|time:"H:i" }}</strong>
+        </div>
+        <div class="booking-receipt-row booking-receipt-status">
+            <span>وضعیت</span>
+            <strong>در انتظار تأیید</strong>
+        </div>
+        <div class="booking-receipt-row">
+            <span>کد پیگیری</span>
+            <strong dir="ltr">{{ appointment.id }}</strong>
+        </div>
+    </div>
+
+    <a class="booking-submit-button booking-success-button" href="{% url 'accounts:doctor_list' %}">
+        بازگشت به فهرست پزشکان <span aria-hidden="true">←</span>
+    </a>
+</section>
+{% endblock %}

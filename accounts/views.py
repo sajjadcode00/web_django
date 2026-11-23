@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import PatientRegistrationForm
 from .models import Doctor
@@ -53,3 +53,15 @@ def doctor_list(request):
         "accounts/doctor_list.html",
         {"doctors": doctors, "doctor_count": doctors.count()},
     )
+
+
+@login_required
+def doctor_detail(request, doctor_id):
+    """Show the public profile of an active doctor and their clinic."""
+    doctor = get_object_or_404(
+        Doctor.objects.select_related("user", "clinic"),
+        pk=doctor_id,
+        user__is_active=True,
+    )
+
+    return render(request, "accounts/doctor_detail.html", {"doctor": doctor})

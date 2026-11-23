@@ -24,4 +24,5 @@ urlpatterns = [
     ),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("doctors/", views.doctor_list, name="doctor_list"),
+    path("doctors/<int:doctor_id>/", views.doctor_detail, name="doctor_detail"),
 ]

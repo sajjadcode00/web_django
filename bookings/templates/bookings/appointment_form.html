@@ -1,0 +1,87 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+
+{% block title %}رزرو نوبت | وب‌دکتر{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'accounts/css/doctors.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/doctor_detail.css' %}">
+<link rel="stylesheet" href="{% static 'bookings/css/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="booking-page" aria-labelledby="booking-title">
+    <a class="booking-back-link" href="{% url 'accounts:doctor_detail' doctor.id %}">
+        <span aria-hidden="true">→</span> بازگشت به پروفایل پزشک
+    </a>
+
+    <div class="booking-layout">
+        <aside class="booking-doctor-card">
+            <span class="booking-card-kicker">رزرو آنلاین وب‌دکتر</span>
+            <div class="booking-doctor-avatar" aria-hidden="true">
+                {{ doctor.user.first_name|slice:":1" }}{{ doctor.user.last_name|slice:":1" }}
+            </div>
+            <h2>دکتر {{ doctor.user.get_full_name|default:doctor.user.username }}</h2>
+            <span class="booking-doctor-specialty">{{ doctor.specialty }}</span>
+            {% if doctor.clinic %}
+                <div class="booking-clinic-info">
+                    <span aria-hidden="true">⌖</span>
+                    <div>
+                        <small>محل فعالیت</small>
+                        <strong>{{ doctor.clinic.name }}</strong>
+                    </div>
+                </div>
+            {% else %}
+                <p class="booking-no-clinic">برای این پزشک کلینیکی ثبت نشده است.</p>
+            {% endif %}
+            <div class="booking-note">
+                <span aria-hidden="true">ⓘ</span>
+                <p>درخواست شما ابتدا با وضعیت «در انتظار تأیید» ثبت می‌شود. پس از بررسی کلینیک، وضعیت نوبت مشخص خواهد شد.</p>
+            </div>
+        </aside>
+
+        <section class="booking-form-card">
+            <div class="booking-form-heading">
+                <span class="booking-form-icon" aria-hidden="true">▦</span>
+                <div>
+                    <span class="booking-card-kicker">انتخاب زمان مراجعه</span>
+                    <h1 id="booking-title">درخواست رزرو نوبت</h1>
+                    <p>تاریخ و ساعت موردنظرت را انتخاب کن.</p>
+                </div>
+            </div>
+
+            <form method="post" class="appointment-form" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="booking-error-summary" role="alert">
+                        {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="booking-field">
+                    <label for="{{ form.appointment_date.id_for_label }}">{{ form.appointment_date.label }}</label>
+                    {{ form.appointment_date }}
+                    {% if form.appointment_date.help_text %}<small class="booking-help">{{ form.appointment_date.help_text }}</small>{% endif %}
+                    {% for error in form.appointment_date.errors %}<small class="booking-field-error">{{ error }}</small>{% endfor %}
+                </div>
+
+                <div class="booking-field">
+                    <label for="{{ form.appointment_time.id_for_label }}">{{ form.appointment_time.label }}</label>
+                    {{ form.appointment_time }}
+                    {% if form.appointment_time.help_text %}<small class="booking-help">{{ form.appointment_time.help_text }}</small>{% endif %}
+                    {% for error in form.appointment_time.errors %}<small class="booking-field-error">{{ error }}</small>{% endfor %}
+                </div>
+
+                <div class="booking-form-actions">
+                    <button class="booking-submit-button" type="submit">
+                        ثبت درخواست نوبت <span aria-hidden="true">←</span>
+                    </button>
+                    <a class="booking-cancel-link" href="{% url 'accounts:doctor_detail' doctor.id %}">انصراف</a>
+                </div>
+            </form>
+            <p class="booking-privacy-note">اطلاعات رزرو به حساب کاربری فعلی شما متصل می‌شود و نیازی به وارد کردن دوباره مشخصات بیمار نیست.</p>
+        </section>
+    </div>
+</section>
+{% endblock %}
