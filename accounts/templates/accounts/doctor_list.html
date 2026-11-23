@@ -1,0 +1,92 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+
+{% block title %}پزشکان | دکتریار{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'accounts/css/doctors.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="doctor-directory" aria-labelledby="directory-title">
+    <div class="directory-heading">
+        <div class="directory-intro">
+            <span class="directory-kicker">انتخاب آگاهانه، مراقبت بهتر</span>
+            <h1 id="directory-title">پزشک مورد نظرت رو پیدا کن</h1>
+            <p>فهرست پزشکان دکتریار رو ببین و برای انتخاب پزشک مناسب، تخصص و محل فعالیتش رو بررسی کن.</p>
+        </div>
+
+        <div class="directory-count" aria-label="تعداد پزشکان فعال">
+            <span class="count-icon" aria-hidden="true">✚</span>
+            <span class="count-number">{{ doctor_count }}</span>
+            <span class="count-label">پزشک فعال</span>
+        </div>
+    </div>
+
+    <div class="directory-toolbar">
+        <div>
+            <h2>پزشکان ما</h2>
+            <p>برای مشاهده اطلاعات پزشکان، فهرست زیر رو بررسی کن.</p>
+        </div>
+        <span class="directory-status"><span class="status-dot"></span> اطلاعات به‌روز</span>
+    </div>
+
+    {% if doctors %}
+        <div class="doctor-grid">
+            {% for doctor in doctors %}
+                <article class="doctor-card">
+                    <div class="doctor-card-top">
+                        <div class="doctor-avatar" aria-hidden="true">
+                            {{ doctor.user.first_name|slice:":1" }}{{ doctor.user.last_name|slice:":1" }}
+                        </div>
+                        <span class="doctor-label">پزشک دکتریار</span>
+                    </div>
+
+                    <div class="doctor-information">
+                        <h3>دکتر {{ doctor.user.get_full_name|default:doctor.user.username }}</h3>
+                        <span class="specialty-label">{{ doctor.specialty }}</span>
+                    </div>
+
+                    {% if doctor.clinic %}
+                        <div class="doctor-clinic">
+                            <span class="clinic-icon" aria-hidden="true">⌖</span>
+                            <div>
+                                <small>محل فعالیت</small>
+                                <strong>{{ doctor.clinic.name }}</strong>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="doctor-clinic clinic-unassigned">
+                            <span class="clinic-icon" aria-hidden="true">⌖</span>
+                            <div>
+                                <small>محل فعالیت</small>
+                                <strong>هنوز ثبت نشده است</strong>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="doctor-card-footer">
+                        <span>اطلاعات بیشتر در مرحله بعد</span>
+                        <span class="footer-arrow" aria-hidden="true">←</span>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-doctors">
+            <div class="empty-icon" aria-hidden="true">✚</div>
+            <h3>هنوز پزشکی ثبت نشده است</h3>
+            <p>به‌زودی فهرست پزشکان در این بخش نمایش داده می‌شود.</p>
+            <span>برای افزودن پزشک، از پنل مدیریت سایت استفاده کن.</span>
+        </div>
+    {% endif %}
+
+    <div class="directory-footer">
+        <span>سلامتی شما، اولویت ماست.</span>
+        <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="directory-logout">خروج از حساب</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

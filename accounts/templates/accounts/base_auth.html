@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#087f78">
+    <title>{% block title %}وب‌دکتر | سامانه سلامت{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/auth.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="{% url 'home' %}" aria-label="صفحه اصلی وب‌دکتر">
+            <span class="brand-mark" aria-hidden="true">+</span>
+            <span class="brand-copy">
+                <strong>وب‌دکتر</strong>
+                <small>همراه سلامت شما</small>
+            </span>
+        </a>
+        <span class="header-note">سامانه هوشمند نوبت‌دهی پزشکی</span>
+    </header>
+
+    <main class="page-main">
+        {% if messages %}
+            <div class="messages" aria-live="polite">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags|default:'info' }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <span>وب‌دکتر</span>
+        <span>مراقبت بهتر، دسترسی آسان‌تر</span>
+    </footer>
+</body>
+</html>

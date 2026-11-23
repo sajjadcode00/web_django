@@ -1,0 +1,224 @@
+/* Doctor directory styles for Doktoryar */
+.doctor-directory {
+    padding: clamp(22px, 4vw, 42px);
+    border: 1px solid rgba(220, 232, 231, .9);
+    border-radius: 26px;
+    background: rgba(255, 255, 255, .94);
+    box-shadow: var(--shadow);
+}
+
+.directory-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: clamp(24px, 4vw, 42px);
+    overflow: hidden;
+    border-radius: 21px;
+    color: #fff;
+    background: linear-gradient(120deg, #087f78 0%, #086c68 58%, #124f58 100%);
+}
+
+.directory-intro { max-width: 690px; }
+.directory-kicker {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #c4f3ee;
+    font-size: 13px;
+    font-weight: 700;
+}
+.directory-intro h1 {
+    margin: 0 0 10px;
+    font-size: clamp(25px, 3vw, 34px);
+    line-height: 1.7;
+}
+.directory-intro p {
+    max-width: 620px;
+    margin: 0;
+    color: rgba(255, 255, 255, .82);
+    font-size: 15px;
+    line-height: 2.1;
+}
+
+.directory-count {
+    width: 126px;
+    min-width: 126px;
+    min-height: 126px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, .12);
+    backdrop-filter: blur(8px);
+}
+.count-icon { font-size: 19px; line-height: 1.4; }
+.count-number { font-size: 31px; font-weight: 800; line-height: 1.35; }
+.count-label { color: rgba(255, 255, 255, .82); font-size: 12px; }
+
+.directory-toolbar {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin: 36px 2px 20px;
+}
+.directory-toolbar h2 { margin: 0 0 5px; font-size: 22px; font-weight: 800; }
+.directory-toolbar p { margin: 0; color: var(--muted); font-size: 14px; }
+.directory-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid #d9eee8;
+    border-radius: 999px;
+    color: #28755f;
+    background: #f0faf6;
+    font-size: 12px;
+    white-space: nowrap;
+}
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: #28a879; }
+
+.doctor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+.doctor-card {
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 19px;
+    background: #fff;
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.doctor-card:hover {
+    transform: translateY(-3px);
+    border-color: #b9dfd9;
+    box-shadow: 0 15px 32px rgba(24, 62, 67, .08);
+}
+.doctor-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.doctor-avatar {
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d5eeea;
+    border-radius: 17px;
+    color: var(--primary-dark);
+    background: var(--primary-soft);
+    font-size: 18px;
+    font-weight: 800;
+}
+.doctor-label { color: #819197; font-size: 11px; }
+.doctor-information { min-height: 101px; padding-top: 18px; }
+.doctor-information h3 { margin: 0 0 11px; color: var(--ink); font-size: 18px; font-weight: 800; }
+.specialty-label {
+    display: inline-flex;
+    padding: 6px 11px;
+    border-radius: 8px;
+    color: #08736d;
+    background: #eaf6f4;
+    font-size: 12px;
+    font-weight: 700;
+}
+.doctor-clinic {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-height: 62px;
+    padding: 11px 0;
+    border-top: 1px solid #edf1f1;
+    border-bottom: 1px solid #edf1f1;
+}
+.clinic-icon {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 34px;
+    border-radius: 11px;
+    color: #477b78;
+    background: #f0f7f6;
+    font-size: 19px;
+}
+.doctor-clinic div { display: grid; gap: 3px; min-width: 0; }
+.doctor-clinic small { color: #89999e; font-size: 11px; }
+.doctor-clinic strong { overflow: hidden; color: #40545c; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.clinic-unassigned strong { color: #98a4a8; font-weight: 500; }
+.doctor-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 15px;
+    color: #8a999e;
+    font-size: 11px;
+}
+.footer-arrow { color: var(--primary); font-size: 19px; }
+
+.empty-doctors {
+    display: grid;
+    justify-items: center;
+    padding: 58px 20px;
+    border: 1px dashed #c9dfdc;
+    border-radius: 18px;
+    background: #f8fcfb;
+    text-align: center;
+}
+.empty-icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 15px;
+    border-radius: 18px;
+    color: var(--primary);
+    background: var(--primary-soft);
+    font-size: 28px;
+}
+.empty-doctors h3 { margin: 0 0 8px; font-size: 19px; }
+.empty-doctors p { margin: 0 0 8px; color: #687b82; font-size: 14px; }
+.empty-doctors > span { color: #96a4a8; font-size: 12px; }
+
+.directory-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 19px;
+    border-top: 1px solid #edf1f1;
+    color: #8a999e;
+    font-size: 12px;
+}
+.directory-footer form { margin: 0; }
+.directory-logout {
+    padding: 9px 15px;
+    border: 1px solid #dce9e7;
+    border-radius: 10px;
+    color: #54716e;
+    background: #f7fbfa;
+    cursor: pointer;
+    font: inherit;
+    transition: background .2s ease, border-color .2s ease;
+}
+.directory-logout:hover { border-color: #b9d9d4; background: #eaf6f4; }
+
+@media (max-width: 900px) {
+    .doctor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .directory-heading { align-items: flex-start; }
+}
+@media (max-width: 620px) {
+    .doctor-directory { padding: 14px; border-radius: 20px; }
+    .directory-heading { flex-direction: column; padding: 24px 20px; }
+    .directory-count { width: 100%; min-height: 75px; flex-direction: row; gap: 9px; border-radius: 14px; }
+    .count-number { font-size: 25px; }
+    .directory-toolbar { align-items: flex-start; flex-direction: column; margin-top: 27px; }
+    .doctor-grid { grid-template-columns: 1fr; }
+    .doctor-information { min-height: 0; padding-bottom: 17px; }
+    .directory-footer { align-items: flex-start; flex-direction: column; }
+    .directory-logout { width: 100%; }
+    .directory-footer form { width: 100%; }
+}

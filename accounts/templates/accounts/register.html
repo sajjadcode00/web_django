@@ -1,0 +1,53 @@
+{% extends 'accounts/base_auth.html' %}
+
+{% block title %}ثبت‌نام | وب‌دکتر{% endblock %}
+
+{% block content %}
+<section class="auth-layout register-layout">
+    <aside class="welcome-panel">
+        <div class="welcome-orb orb-one"></div>
+        <div class="welcome-orb orb-two"></div>
+        <div class="welcome-content">
+            <span class="eyebrow">به خانواده وب‌دکتر خوش آمدید</span>
+            <h1>شروع یک تجربه ساده‌تر<br>برای پیگیری سلامتی.</h1>
+            <p>با ساخت حساب کاربری، مسیر دسترسی به پزشکان و نوبت‌ها برای شما ساده‌تر می‌شود.</p>
+            <div class="welcome-points">
+                <div><span class="point-icon">✓</span><span>ساخت حساب در چند قدم</span></div>
+                <div><span class="point-icon">✓</span><span>ثبت اطلاعات اولیه بیمار</span></div>
+                <div><span class="point-icon">✓</span><span>ورود امن با نام کاربری و رمز عبور</span></div>
+            </div>
+        </div>
+        <div class="welcome-decoration" aria-hidden="true">✚</div>
+    </aside>
+
+    <section class="form-panel register-form-panel">
+        <div class="form-heading">
+            <span class="form-kicker">ایجاد حساب جدید</span>
+            <h2>ثبت‌نام در وب‌دکتر</h2>
+            <p>اطلاعات زیر را با دقت تکمیل کنید.</p>
+        </div>
+
+        <form method="post" class="auth-form register-form" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-errors">{{ form.non_field_errors }}</div>
+            {% endif %}
+            {% for field in form %}
+                <div class="field-wrap">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}<small class="field-help">{{ field.help_text }}</small>{% endif %}
+                    {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="primary-button">ساخت حساب کاربری <span aria-hidden="true">←</span></button>
+        </form>
+
+        <div class="form-switch">
+            قبلاً ثبت‌نام کرده‌اید؟
+            <a href="{% url 'accounts:login' %}">وارد شوید</a>
+        </div>
+        <p class="security-note"><span aria-hidden="true">▣</span> رمز عبور شما به‌صورت هش‌شده ذخیره می‌شود.</p>
+    </section>
+</section>
+{% endblock %}

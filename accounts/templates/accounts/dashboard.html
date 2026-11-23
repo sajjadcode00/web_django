@@ -1,0 +1,20 @@
+{% extends 'accounts/base_auth.html' %}
+
+{% block title %}حساب کاربری | وب‌دکتر{% endblock %}
+
+{% block content %}
+<section class="dashboard-card">
+    <div class="dashboard-icon" aria-hidden="true">✓</div>
+    <span class="form-kicker">ورود موفقیت‌آمیز</span>
+    <h1>سلام {{ request.user.first_name|default:request.user.username }} عزیز!</h1>
+    <p>با موفقیت وارد حساب کاربری خود شده‌اید.</p>
+    <div class="phase-placeholder">
+        <strong>قدم بعدی: انتخاب پزشک</strong>
+        <span>در مرحله دوم پروژه، فهرست پزشکان و امکان مشاهده پروفایل آن‌ها در این بخش قرار می‌گیرد.</span>
+    </div>
+    <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="secondary-button">خروج از حساب</button>
+    </form>
+</section>
+{% endblock %}

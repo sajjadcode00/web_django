@@ -1,0 +1,53 @@
+{% extends 'accounts/base_auth.html' %}
+
+{% block title %}ورود به حساب | وب‌دکتر{% endblock %}
+
+{% block content %}
+<section class="auth-layout">
+    <aside class="welcome-panel">
+        <div class="welcome-orb orb-one"></div>
+        <div class="welcome-orb orb-two"></div>
+        <div class="welcome-content">
+            <span class="eyebrow">سلامتی، یک قدم نزدیک‌تر</span>
+            <h1>برای مراقبت از سلامتی‌ات،<br>از همین‌جا شروع کن.</h1>
+            <p>پزشک مورد نظرت را پیدا کن و ساده‌تر برای دریافت نوبت اقدام کن.</p>
+            <div class="welcome-points">
+                <div><span class="point-icon">✓</span><span>دسترسی آسان به پزشکان</span></div>
+                <div><span class="point-icon">✓</span><span>رزرو نوبت در چند مرحله ساده</span></div>
+                <div><span class="point-icon">✓</span><span>مدیریت یکپارچه اطلاعات حساب</span></div>
+            </div>
+        </div>
+        <div class="welcome-decoration" aria-hidden="true">✚</div>
+    </aside>
+
+    <section class="form-panel">
+        <div class="form-heading">
+            <span class="form-kicker">خوش برگشتی!</span>
+            <h2>ورود به حساب کاربری</h2>
+            <p>برای ادامه، اطلاعات حساب خود را وارد کنید.</p>
+        </div>
+
+        <form method="post" class="auth-form" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-errors">{{ form.non_field_errors }}</div>
+            {% endif %}
+            {% for field in form %}
+                <div class="field-wrap">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </div>
+            {% endfor %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+            <button type="submit" class="primary-button">ورود به حساب <span aria-hidden="true">←</span></button>
+        </form>
+
+        <div class="form-switch">
+            حساب کاربری ندارید؟
+            <a href="{% url 'accounts:register' %}">اینجا ثبت‌نام کنید</a>
+        </div>
+        <p class="security-note"><span aria-hidden="true">▣</span> اطلاعات حساب شما به‌صورت امن نگهداری می‌شود.</p>
+    </section>
+</section>
+{% endblock %}
