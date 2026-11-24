@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Appointment
+from .models import Appointment, DoctorSchedule
 
 
 @admin.register(Appointment)
@@ -34,3 +34,11 @@ class AppointmentAdmin(admin.ModelAdmin):
     @admin.display(description="پزشک")
     def doctor_name(self, obj):
         return obj.doctor.user.get_full_name() or obj.doctor.user.username
+
+
+@admin.register(DoctorSchedule)
+class DoctorScheduleAdmin(admin.ModelAdmin):
+    list_display = ("doctor", "weekday", "start_time", "end_time", "slot_duration_minutes", "is_active")
+    list_filter = ("weekday", "is_active")
+    search_fields = ("doctor__user__first_name", "doctor__user__last_name", "doctor__user__username")
+    list_select_related = ("doctor__user",)

@@ -5,19 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#087f78">
-    <title>{% block title %}وب‌دکتر | سامانه سلامت{% endblock %}</title>
+    <title>{% block title %}دکتریار | سامانه سلامت{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'accounts/css/auth.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
 <body>
     <header class="site-header">
-        <a class="brand" href="{% url 'home' %}" aria-label="صفحه اصلی وب‌دکتر">
+        <a class="brand" href="{% url 'home' %}" aria-label="صفحه اصلی دکتریار">
             <span class="brand-mark" aria-hidden="true">+</span>
             <span class="brand-copy">
-                <strong>وب‌دکتر</strong>
+                <strong>دکتریار</strong>
                 <small>همراه سلامت شما</small>
             </span>
         </a>
+        {% if show_patient_notifications %}
+            <a class="header-notifications" href="{% url 'bookings:notifications' %}" aria-label="اعلانات بیمار">
+                <svg class="header-notification-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+                </svg>
+                <span>اعلانات</span>
+                {% if unread_notification_count %}<span class="header-notification-count">{{ unread_notification_count }}</span>{% endif %}
+            </a>
+        {% endif %}
         <span class="header-note">سامانه هوشمند نوبت‌دهی پزشکی</span>
     </header>
 
@@ -33,7 +42,7 @@
     </main>
 
     <footer class="site-footer">
-        <span>وب‌دکتر</span>
+        <span>دکتریار</span>
         <span>مراقبت بهتر، دسترسی آسان‌تر</span>
     </footer>
 </body>

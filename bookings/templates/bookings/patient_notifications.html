@@ -1,0 +1,44 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+{% block title %}اعلانات | دکتریار{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/css/workflows.css' %}">{% endblock %}
+{% block content %}
+<section class="workflow-page">
+    <a class="workflow-back-link" href="{% url 'bookings:patient_appointments' %}">→ بازگشت به نوبت‌های من</a>
+    <header class="workflow-page-heading">
+        <div>
+            <span class="workflow-eyebrow">پیام‌های دکتریار</span>
+            <h1>اعلانات</h1>
+            <p>نتیجه بررسی درخواست‌های نوبت شما در این بخش نمایش داده می‌شود.</p>
+        </div>
+    </header>
+    <section class="workflow-panel notification-list">
+        {% if notifications %}
+            {% for notification in notifications %}
+                <article class="notification-card{% if not notification.is_read %} notification-unread{% endif %}">
+                    <div class="notification-card-mark" aria-hidden="true">{% if notification.event_type == 'CONFIRMED' %}✓{% else %}×{% endif %}</div>
+                    <div class="notification-card-content">
+                        <div class="notification-card-heading">
+                            <strong>{% if notification.event_type == 'CONFIRMED' %}نوبت شما تأیید شد{% else %}درخواست نوبت شما رد شد{% endif %}</strong>
+                            {% if not notification.is_read %}<span class="notification-new-label">جدید</span>{% else %}<span class="notification-read-label">خوانده‌شده</span>{% endif %}
+                        </div>
+                        <p>{{ notification.message }}</p>
+                        <small>{{ notification.created_at|date:'Y/m/d' }} · {{ notification.created_at|time:'H:i' }}</small>
+                    </div>
+                    <form method="post" action="{% url 'bookings:open_notification' notification.id %}">
+                        {% csrf_token %}
+                        <button class="workflow-primary workflow-small-button" type="submit">مشاهده نوبت</button>
+                    </form>
+                </article>
+            {% endfor %}
+        {% else %}
+            <div class="workflow-empty-state">
+                <span>🔔</span>
+                <h3>هنوز اعلانی نداری</h3>
+                <p>وقتی پزشک درخواست نوبتت را تأیید یا رد کند، نتیجه در این قسمت نمایش داده می‌شود.</p>
+                <a class="workflow-primary workflow-inline-button" href="{% url 'bookings:patient_appointments' %}">مشاهده نوبت‌های من</a>
+            </div>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

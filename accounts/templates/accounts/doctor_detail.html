@@ -1,7 +1,7 @@
 {% extends 'accounts/base_auth.html' %}
 {% load static %}
 
-{% block title %}پروفایل پزشک | وب‌دکتر{% endblock %}
+{% block title %}پروفایل پزشک | دکتریار{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'accounts/css/doctors.css' %}">
@@ -19,7 +19,7 @@
             {{ doctor.user.first_name|slice:":1" }}{{ doctor.user.last_name|slice:":1" }}
         </div>
         <div class="profile-hero-copy">
-            <span class="profile-eyebrow">پروفایل پزشک در وب‌دکتر</span>
+            <span class="profile-eyebrow">پروفایل پزشک در دکتریار</span>
             <h1 id="doctor-profile-title">دکتر {{ doctor.user.get_full_name|default:doctor.user.username }}</h1>
             <span class="profile-specialty">{{ doctor.specialty }}</span>
             <p>اطلاعات تخصصی و محل فعالیت این پزشک را در این صفحه مشاهده می‌کنی.</p>
@@ -93,10 +93,14 @@
             <h2 id="booking-panel-heading">برای دریافت نوبت آماده‌ای؟</h2>
             <p>تاریخ و ساعت موردنظرت را انتخاب کن تا درخواست نوبت برای کلینیک ارسال شود.</p>
         </div>
-        <a class="profile-booking-button" href="{% url 'bookings:create' doctor.id %}">
-            رزرو نوبت این پزشک
-            <span aria-hidden="true">←</span>
-        </a>
+        {% if is_patient %}
+            <a class="profile-booking-button" href="{% url 'bookings:create' doctor.id %}">
+                مشاهده زمان‌های آزاد و رزرو نوبت
+                <span aria-hidden="true">←</span>
+            </a>
+        {% else %}
+            <span class="profile-booking-button profile-booking-disabled">برای رزرو نوبت با حساب بیمار وارد شوید.</span>
+        {% endif %}
     </section>
 </section>
 {% endblock %}

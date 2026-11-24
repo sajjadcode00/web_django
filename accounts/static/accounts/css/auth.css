@@ -184,75 +184,20 @@ a:hover { color: var(--primary-dark); }
 }
 
 
-/* Font Size Improvements */
-
-.brand-copy strong {
-    font-size: 20px;
+/* Patient notifications link in the shared header. */
+.header-notifications {
+    display: inline-flex; align-items: center; gap: 8px; margin-inline-start: auto;
+    padding: 9px 13px; border: 1px solid #d8e9e6; border-radius: 12px;
+    color: #176d68; background: #fff; font-size: 13px; font-weight: 750;
+    text-decoration: none; transition: .2s ease;
 }
-
-.brand-copy small,
-.header-note {
-    font-size: 14px;
+.header-notifications:hover { color: #075e59; background: #eef8f6; border-color: #abd7d1; }
+.header-notification-icon { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.header-notification-count {
+    display: inline-grid; place-items: center; min-width: 21px; height: 21px;
+    padding: 0 5px; border-radius: 999px; color: #fff; background: #d84c52;
+    font-size: 11px; font-weight: 800;
 }
-
-.welcome-panel p {
-    font-size: 17px;
-}
-
-.welcome-points > div {
-    font-size: 16px;
-}
-
-.form-heading h2 {
-    font-size: 28px;
-}
-
-.form-heading p {
-    font-size: 16px;
-}
-
-.field-wrap label {
-    font-size: 16px;
-}
-
-.form-input {
-    font-size: 16px;
-}
-
-.field-help {
-    font-size: 15px;
-}
-
-.field-error,
-.form-errors {
-    font-size: 14px;
-}
-
-.primary-button,
-.secondary-button {
-    font-size: 16px;
-}
-
-.form-switch {
-    font-size: 14px;
-}
-
-.security-note {
-    font-size: 13px;
-}
-
-.message {
-    font-size: 15px;
-}
-
-.dashboard-card h1 {
-    font-size: 29px;
-}
-
-.dashboard-card > p {
-    font-size: 16px;
-}
-
-.site-footer {
-    font-size: 12px;
+@media (max-width: 520px) {
+    .header-notifications { padding: 7px 9px; gap: 5px; font-size: 11px; }
 }

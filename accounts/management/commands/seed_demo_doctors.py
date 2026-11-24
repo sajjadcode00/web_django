@@ -4,6 +4,7 @@ from django.db import transaction
 
 from accounts.models import Doctor
 from clinic.models import Clinic
+from bookings.models import DoctorSchedule
 
 
 class Command(BaseCommand):
@@ -100,7 +101,7 @@ class Command(BaseCommand):
                 user.set_unusable_password()
                 user.save(update_fields=["password"])
 
-            _, doctor_created = Doctor.objects.get_or_create(
+            doctor, doctor_created = Doctor.objects.get_or_create(
                 user=user,
                 defaults={
                     "clinic": clinic,
@@ -108,6 +109,16 @@ class Command(BaseCommand):
                     "medical_system_number": item["medical_system_number"],
                 },
             )
+
+            # Sample recurring hours (Saturday through Wednesday, 09:00-12:00).
+            for weekday in (5, 6, 0, 1, 2):
+                DoctorSchedule.objects.get_or_create(
+                    doctor=doctor,
+                    weekday=weekday,
+                    start_time="09:00",
+                    end_time="12:00",
+                    defaults={"slot_duration_minutes": 30, "is_active": True},
+                )
 
             if doctor_created:
                 created_doctors += 1

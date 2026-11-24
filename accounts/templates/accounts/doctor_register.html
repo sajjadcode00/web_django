@@ -1,0 +1,33 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+
+{% block title %}ثبت‌نام پزشک | دکتریار{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/css/workflows.css' %}">{% endblock %}
+
+{% block content %}
+<section class="workflow-auth-card">
+    <div class="workflow-eyebrow">پنل پزشکان دکتریار</div>
+    <h1>درخواست ثبت‌نام پزشک</h1>
+    <p class="workflow-lead">اطلاعات هویتی و حرفه‌ای خود را وارد کنید. حساب پزشک پس از بررسی مدیر فعال می‌شود.</p>
+
+    <div class="workflow-notice">
+        <strong>توجه</strong>
+        ثبت‌نام به‌تنهایی به معنی تأیید شماره نظام پزشکی نیست. مدیر سامانه باید اطلاعات شما را بررسی و حساب را فعال کند.
+    </div>
+
+    <form method="post" class="workflow-form" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="workflow-errors">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+            <div class="workflow-field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<small>{{ field.help_text|safe }}</small>{% endif %}
+                {% for error in field.errors %}<small class="workflow-error">{{ error }}</small>{% endfor %}
+            </div>
+        {% endfor %}
+        <button class="workflow-primary" type="submit">ارسال درخواست ثبت‌نام</button>
+    </form>
+    <p class="workflow-auth-links">حساب پزشک دارید؟ <a href="{% url 'accounts:login' %}">ورود به حساب</a></p>
+</section>
+{% endblock %}

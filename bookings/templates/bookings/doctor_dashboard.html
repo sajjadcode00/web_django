@@ -1,0 +1,20 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+{% block title %}پنل پزشک | دکتریار{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/css/workflows.css' %}">{% endblock %}
+{% block content %}
+<section class="workflow-page">
+    <header class="workflow-page-heading"><div><span class="workflow-eyebrow">پنل اختصاصی پزشک</span><h1>سلام دکتر {{ doctor.user.get_full_name|default:doctor.user.username }}</h1><p>از این بخش می‌توانی برنامه حضور و نوبت‌های بیماران را مدیریت کنی.</p></div><form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="workflow-secondary" type="submit">خروج</button></form></header>
+    <div class="workflow-stat-grid">
+        <div class="workflow-stat"><span>بازه‌های حضور فعال</span><strong>{{ schedule_count }}</strong></div>
+        <div class="workflow-stat"><span>درخواست‌های در انتظار</span><strong>{{ pending_count }}</strong></div>
+    </div>
+    <div class="workflow-action-grid">
+        <a class="workflow-action-card" href="{% url 'bookings:doctor_schedule' %}"><span class="workflow-action-icon">◷</span><strong>تعریف ساعت‌های حضور</strong><small>روزها، ساعت شروع و پایان و مدت هر نوبت</small></a>
+        <a class="workflow-action-card" href="{% url 'bookings:doctor_appointments' %}"><span class="workflow-action-icon">▤</span><strong>مشاهده نوبت‌های بیماران</strong><small>بررسی درخواست‌ها و اطلاعات مراجعه‌کنندگان</small></a>
+    </div>
+    <section class="workflow-panel"><div class="workflow-panel-heading"><div><h2>نوبت‌های پیش‌رو</h2><p>نزدیک‌ترین درخواست‌ها و نوبت‌های شما</p></div><a class="workflow-text-link" href="{% url 'bookings:doctor_appointments' %}">مشاهده همه</a></div>
+        {% if upcoming_appointments %}<div class="workflow-appointment-list">{% for appointment in upcoming_appointments %}<article class="workflow-appointment-row"><div><strong>{{ appointment.patient.user.get_full_name|default:appointment.patient.user.username }}</strong><small>{{ appointment.appointment_date|date:'Y/m/d' }} ـ {{ appointment.appointment_time|time:'H:i' }}</small></div><span class="workflow-status status-{{ appointment.status|lower }}">{{ appointment.get_status_display }}</span></article>{% endfor %}</div>{% else %}<div class="workflow-empty-state"><span>▤</span><h3>هنوز نوبتی ثبت نشده است</h3><p>پس از ثبت درخواست بیماران، اطلاعات آن‌ها اینجا نمایش داده می‌شود.</p></div>{% endif %}
+    </section>
+</section>
+{% endblock %}

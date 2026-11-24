@@ -1,0 +1,13 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+{% block title %}نوبت‌های بیماران | دکتریار{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/css/workflows.css' %}">{% endblock %}
+{% block content %}
+<section class="workflow-page">
+    <a class="workflow-back-link" href="{% url 'bookings:doctor_dashboard' %}">→ بازگشت به پنل پزشک</a>
+    <header class="workflow-page-heading"><div><span class="workflow-eyebrow">مدیریت مراجعه‌کنندگان</span><h1>نوبت‌های ثبت‌شده</h1><p>اطلاعات بیمارانی که برای شما درخواست نوبت ثبت کرده‌اند.</p></div></header>
+    <section class="workflow-panel">
+        {% if appointments %}<div class="workflow-table-wrap"><table class="workflow-table"><thead><tr><th>بیمار</th><th>اطلاعات تماس</th><th>تاریخ و ساعت</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody>{% for appointment in appointments %}<tr><td><strong>{{ appointment.patient.user.get_full_name|default:appointment.patient.user.username }}</strong><small>کد ملی: {{ appointment.patient.national_id }}</small></td><td dir="ltr">{{ appointment.patient.phone_number }}</td><td>{{ appointment.appointment_date|date:'Y/m/d' }}<small>{{ appointment.appointment_time|time:'H:i' }}</small></td><td><span class="workflow-status status-{{ appointment.status|lower }}">{{ appointment.get_status_display }}</span></td><td><div class="workflow-table-actions">{% if appointment.status == "PENDING" %}<form method="post" action="{% url 'bookings:confirm_doctor_appointment' appointment.id %}">{% csrf_token %}<button class="workflow-primary workflow-small-button" type="submit">تأیید نوبت</button></form><form method="post" action="{% url 'bookings:reject_doctor_appointment' appointment.id %}" onsubmit="return confirm('از رد این درخواست نوبت مطمئن هستید؟');">{% csrf_token %}<button class="workflow-danger-button" type="submit">رد درخواست</button></form>{% else %}<span class="workflow-action-done">بررسی شده</span>{% endif %}</div></td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="workflow-empty-state"><span>▤</span><h3>هنوز درخواستی ثبت نشده است</h3><p>پس از رزرو توسط بیماران، اطلاعات آن‌ها در این بخش ظاهر می‌شود.</p></div>{% endif %}
+    </section>
+</section>
+{% endblock %}

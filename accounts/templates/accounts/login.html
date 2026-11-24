@@ -1,6 +1,6 @@
 {% extends 'accounts/base_auth.html' %}
 
-{% block title %}ورود به حساب | وب‌دکتر{% endblock %}
+{% block title %}ورود به حساب | دکتریار{% endblock %}
 
 {% block content %}
 <section class="auth-layout">
@@ -44,8 +44,9 @@
         </form>
 
         <div class="form-switch">
-            حساب کاربری ندارید؟
-            <a href="{% url 'accounts:register' %}">اینجا ثبت‌نام کنید</a>
+            حساب بیمار ندارید؟
+            <a href="{% url 'accounts:register' %}">ثبت‌نام بیمار</a><br>
+            پزشک هستید؟ <a href="{% url 'accounts:doctor_register' %}">درخواست ثبت‌نام پزشک</a>
         </div>
         <p class="security-note"><span aria-hidden="true">▣</span> اطلاعات حساب شما به‌صورت امن نگهداری می‌شود.</p>
     </section>

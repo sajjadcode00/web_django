@@ -4,7 +4,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
-from .models import Patient
+from clinic.models import Clinic
+
+from .models import Doctor, Patient
 
 
 # Convert Persian and Arabic digits to ASCII so that users can type either form.
@@ -132,7 +134,7 @@ class PatientRegistrationForm(UserCreationForm):
         return user
 
 
-class PatientAuthenticationForm(AuthenticationForm):
+class AccountAuthenticationForm(AuthenticationForm):
     """Persian labels and styling for Django's standard authentication form."""
 
     error_messages = {
@@ -150,3 +152,69 @@ class PatientAuthenticationForm(AuthenticationForm):
         self.fields["password"].widget.attrs.update(
             {"class": "form-input", "placeholder": "رمز عبور خود را وارد کنید", "autocomplete": "current-password", "dir": "ltr"}
         )
+
+
+class DoctorRegistrationForm(UserCreationForm):
+    """Collect a doctor's professional details; account activation requires admin review."""
+
+    specialty = forms.CharField(
+        label="تخصص",
+        max_length=100,
+        widget=forms.TextInput(attrs={"class": "form-input", "placeholder": "مثلاً قلب و عروق"}),
+    )
+    medical_system_number = forms.CharField(
+        label="شماره نظام پزشکی",
+        max_length=20,
+        widget=forms.TextInput(attrs={"class": "form-input", "dir": "ltr", "inputmode": "numeric"}),
+    )
+    clinic = forms.ModelChoiceField(
+        label="کلینیک محل فعالیت (اختیاری)",
+        queryset=Clinic.objects.all(),
+        required=False,
+        empty_label="فعلاً کلینیکی انتخاب نمی‌کنم",
+        widget=forms.Select(attrs={"class": "form-input"}),
+    )
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ("first_name", "last_name", "username")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        labels = {
+            "first_name": "نام",
+            "last_name": "نام خانوادگی",
+            "username": "نام کاربری",
+            "password1": "رمز عبور",
+            "password2": "تکرار رمز عبور",
+        }
+        for name, label in labels.items():
+            self.fields[name].label = label
+            self.fields[name].widget.attrs.update({"class": "form-input"})
+        self.fields["first_name"].required = True
+        self.fields["last_name"].required = True
+        self.order_fields([
+            "first_name", "last_name", "username", "specialty",
+            "medical_system_number", "clinic", "password1", "password2",
+        ])
+
+    def clean_medical_system_number(self):
+        value = self.cleaned_data["medical_system_number"].strip()
+        if Doctor.objects.filter(medical_system_number=value).exists():
+            raise ValidationError("این شماره نظام پزشکی قبلاً ثبت شده است.")
+        return value
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        # New doctor accounts remain inactive until an administrator verifies the details.
+        user.is_active = False
+        if commit:
+            with transaction.atomic():
+                user.save()
+                Doctor.objects.create(
+                    user=user,
+                    specialty=self.cleaned_data["specialty"].strip(),
+                    medical_system_number=self.cleaned_data["medical_system_number"],
+                    clinic=self.cleaned_data.get("clinic"),
+                )
+        return user

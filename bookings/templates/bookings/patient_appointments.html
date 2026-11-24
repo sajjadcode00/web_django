@@ -1,0 +1,13 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+{% block title %}نوبت‌های من | دکتریار{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/css/workflows.css' %}">{% endblock %}
+{% block content %}
+<section class="workflow-page">
+    <a class="workflow-back-link" href="{% url 'accounts:doctor_list' %}">→ بازگشت به فهرست پزشکان</a>
+    <header class="workflow-page-heading"><div><span class="workflow-eyebrow">پرونده نوبت‌های من</span><h1>نوبت‌های ثبت‌شده من</h1><p>درخواست‌ها، وضعیت نوبت‌ها و امکان لغو نوبت را از این بخش مدیریت کن.</p></div></header>
+    <section class="workflow-panel">
+        {% if appointments %}<div class="workflow-patient-appointment-list">{% for appointment in appointments %}<article class="workflow-patient-appointment"><div class="workflow-appointment-main"><span class="workflow-eyebrow">{{ appointment.appointment_date|date:'Y/m/d' }} · {{ appointment.appointment_time|time:'H:i' }}</span><h2>دکتر {{ appointment.doctor.user.get_full_name|default:appointment.doctor.user.username }}</h2><p>{{ appointment.doctor.specialty }}{% if appointment.doctor.clinic %} · {{ appointment.doctor.clinic.name }}{% endif %}</p></div><div class="workflow-appointment-actions"><span class="workflow-status status-{{ appointment.status|lower }}">{{ appointment.get_status_display }}</span>{% if appointment.status == 'PENDING' or appointment.status == 'CONFIRMED' %}{% if appointment.appointment_date >= today %}<form method="post" action="{% url 'bookings:cancel_patient_appointment' appointment.id %}" onsubmit="return confirm('از لغو این نوبت مطمئن هستید؟');">{% csrf_token %}<button class="workflow-danger-button" type="submit">لغو نوبت</button></form>{% endif %}{% endif %}</div></article>{% endfor %}</div>{% else %}<div class="workflow-empty-state"><span>▤</span><h3>هنوز نوبتی ثبت نکرده‌ای</h3><p>از فهرست پزشکان، پزشک موردنظرت را انتخاب و نوبت رزرو کن.</p><a class="workflow-primary workflow-inline-button" href="{% url 'accounts:doctor_list' %}">مشاهده پزشکان</a></div>{% endif %}
+    </section>
+</section>
+{% endblock %}

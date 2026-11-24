@@ -1,10 +1,11 @@
 {% extends 'accounts/base_auth.html' %}
 {% load static %}
 
-{% block title %}پزشکان | وب‌دکتر{% endblock %}
+{% block title %}پزشکان | دکتریار{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'accounts/css/doctors.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/workflows.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -13,22 +14,36 @@
         <div class="directory-intro">
             <span class="directory-kicker">انتخاب آگاهانه، مراقبت بهتر</span>
             <h1 id="directory-title">پزشک مورد نظرت رو پیدا کن</h1>
-            <p>فهرست پزشکان وب‌دکتر رو ببین و برای انتخاب پزشک مناسب، تخصص و محل فعالیتش رو بررسی کن.</p>
+            <p>نام پزشک یا تخصص موردنظرت را جست‌وجو کن و زمان‌های آزاد او را ببین.</p>
         </div>
-
         <div class="directory-count" aria-label="تعداد پزشکان فعال">
             <span class="count-icon" aria-hidden="true">✚</span>
             <span class="count-number">{{ doctor_count }}</span>
-            <span class="count-label">پزشک فعال</span>
+            <span class="count-label">پزشک پیدا شد</span>
         </div>
     </div>
 
-    <div class="directory-toolbar">
-        <div>
-            <h2>پزشکان ما</h2>
-            <p>برای مشاهده اطلاعات پزشکان، فهرست زیر رو بررسی کن.</p>
+    <form method="get" class="doctor-search-form" role="search">
+        <div class="workflow-field search-text-field">
+            <label for="doctor-search">جست‌وجوی نام یا تخصص</label>
+            <input id="doctor-search" type="search" name="q" value="{{ search_query }}" class="workflow-input" placeholder="مثلاً سارا احمدی یا قلب و عروق">
         </div>
-        <span class="directory-status"><span class="status-dot"></span> اطلاعات به‌روز</span>
+        <div class="workflow-field">
+            <label for="specialty-filter">تخصص</label>
+            <select id="specialty-filter" name="specialty" class="workflow-input">
+                <option value="">همه تخصص‌ها</option>
+                {% for specialty in specialties %}
+                    <option value="{{ specialty }}" {% if selected_specialty == specialty %}selected{% endif %}>{{ specialty }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="workflow-primary search-submit" type="submit">جست‌وجو</button>
+        {% if search_query or selected_specialty %}<a class="workflow-reset" href="{% url 'accounts:doctor_list' %}">پاک کردن فیلترها</a>{% endif %}
+    </form>
+
+    <div class="directory-toolbar">
+        <div><h2>پزشکان دکتریار</h2><p>برای مشاهده اطلاعات و زمان‌های حضور، پروفایل پزشک را باز کن.</p></div>
+        <a class="workflow-text-link" href="{% url 'bookings:patient_appointments' %}">نوبت‌های من</a>
     </div>
 
     {% if doctors %}
@@ -36,59 +51,29 @@
             {% for doctor in doctors %}
                 <article class="doctor-card">
                     <div class="doctor-card-top">
-                        <div class="doctor-avatar" aria-hidden="true">
-                            {{ doctor.user.first_name|slice:":1" }}{{ doctor.user.last_name|slice:":1" }}
-                        </div>
-                        <span class="doctor-label">پزشک وب‌دکتر</span>
+                        <div class="doctor-avatar" aria-hidden="true">{{ doctor.user.first_name|slice:":1" }}{{ doctor.user.last_name|slice:":1" }}</div>
+                        <span class="doctor-label">پزشک دکتریار</span>
                     </div>
-
                     <div class="doctor-information">
                         <h3>دکتر {{ doctor.user.get_full_name|default:doctor.user.username }}</h3>
                         <span class="specialty-label">{{ doctor.specialty }}</span>
                     </div>
-
                     {% if doctor.clinic %}
-                        <div class="doctor-clinic">
-                            <span class="clinic-icon" aria-hidden="true">⌖</span>
-                            <div>
-                                <small>محل فعالیت</small>
-                                <strong>{{ doctor.clinic.name }}</strong>
-                            </div>
-                        </div>
+                        <div class="doctor-clinic"><span class="clinic-icon" aria-hidden="true">⌖</span><div><small>محل فعالیت</small><strong>{{ doctor.clinic.name }}</strong></div></div>
                     {% else %}
-                        <div class="doctor-clinic clinic-unassigned">
-                            <span class="clinic-icon" aria-hidden="true">⌖</span>
-                            <div>
-                                <small>محل فعالیت</small>
-                                <strong>هنوز ثبت نشده است</strong>
-                            </div>
-                        </div>
+                        <div class="doctor-clinic clinic-unassigned"><span class="clinic-icon" aria-hidden="true">⌖</span><div><small>محل فعالیت</small><strong>هنوز ثبت نشده است</strong></div></div>
                     {% endif %}
-
-                    <div class="doctor-card-footer">
-                        <a class="doctor-detail-link" href="{% url 'accounts:doctor_detail' doctor.id %}">
-                            مشاهده پروفایل پزشک
-                            <span class="footer-arrow" aria-hidden="true">←</span>
-                        </a>
-                    </div>
+                    <div class="doctor-card-footer"><a class="doctor-detail-link" href="{% url 'accounts:doctor_detail' doctor.id %}">مشاهده پروفایل پزشک <span class="footer-arrow" aria-hidden="true">←</span></a></div>
                 </article>
             {% endfor %}
         </div>
     {% else %}
-        <div class="empty-doctors">
-            <div class="empty-icon" aria-hidden="true">✚</div>
-            <h3>هنوز پزشکی ثبت نشده است</h3>
-            <p>به‌زودی فهرست پزشکان در این بخش نمایش داده می‌شود.</p>
-            <span>برای افزودن پزشک، از پنل مدیریت سایت استفاده کن.</span>
-        </div>
+        <div class="empty-doctors"><div class="empty-icon" aria-hidden="true">✚</div><h3>پزشکی با این مشخصات پیدا نشد</h3><p>نام یا تخصص دیگری را امتحان کن.</p></div>
     {% endif %}
 
     <div class="directory-footer">
         <span>سلامتی شما، اولویت ماست.</span>
-        <form method="post" action="{% url 'accounts:logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="directory-logout">خروج از حساب</button>
-        </form>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit" class="directory-logout">خروج از حساب</button></form>
     </div>
 </section>
 {% endblock %}

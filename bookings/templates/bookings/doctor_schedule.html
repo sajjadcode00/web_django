@@ -1,0 +1,21 @@
+{% extends 'accounts/base_auth.html' %}
+{% load static %}
+{% block title %}برنامه حضور پزشک | دکتریار{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/css/workflows.css' %}">{% endblock %}
+{% block content %}
+<section class="workflow-page">
+    <a class="workflow-back-link" href="{% url 'bookings:doctor_dashboard' %}">→ بازگشت به پنل پزشک</a>
+    <header class="workflow-page-heading"><div><span class="workflow-eyebrow">مدیریت زمان‌های آزاد</span><h1>برنامه حضور من</h1><p>بازه‌های هفتگی حضور را تعریف کن تا بیماران فقط ساعت‌های آزاد را ببینند.</p></div></header>
+    <div class="workflow-two-column">
+        <section class="workflow-panel"><div class="workflow-panel-heading"><div><h2>افزودن بازه حضور</h2><p>برای هر روز می‌توانی چند بازه بدون هم‌پوشانی تعریف کنی.</p></div></div>
+            <form method="post" class="workflow-form" novalidate>{% csrf_token %}{% if form.non_field_errors %}<div class="workflow-errors">{{ form.non_field_errors }}</div>{% endif %}
+                {% for field in form %}<div class="workflow-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<small class="workflow-error">{{ error }}</small>{% endfor %}</div>{% endfor %}
+                <button class="workflow-primary" type="submit">ثبت برنامه حضور</button>
+            </form>
+        </section>
+        <section class="workflow-panel"><div class="workflow-panel-heading"><div><h2>بازه‌های ثبت‌شده</h2><p>این ساعت‌ها در زمان رزرو برای بیماران نمایش داده می‌شوند.</p></div></div>
+            {% if schedules %}<div class="workflow-schedule-list">{% for schedule in schedules %}<article class="workflow-schedule-row"><div><strong>{{ schedule.get_weekday_display }}</strong><small>{{ schedule.start_time|time:'H:i' }} تا {{ schedule.end_time|time:'H:i' }} · هر نوبت {{ schedule.slot_duration_minutes }} دقیقه</small></div><form method="post" action="{% url 'bookings:delete_doctor_schedule' schedule.id %}">{% csrf_token %}<button class="workflow-danger-button" type="submit">حذف</button></form></article>{% endfor %}</div>{% else %}<div class="workflow-empty-state"><span>◷</span><h3>برنامه حضوری تعریف نشده است</h3><p>برای نمایش ساعت‌های آزاد به بیماران، ابتدا یک بازه حضور اضافه کن.</p></div>{% endif %}
+        </section>
+    </div>
+</section>
+{% endblock %}

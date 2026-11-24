@@ -1,7 +1,7 @@
 {% extends 'accounts/base_auth.html' %}
 {% load static %}
 
-{% block title %}ثبت درخواست نوبت | وب‌دکتر{% endblock %}
+{% block title %}وضعیت نوبت | دکتریار{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'bookings/css/booking.css' %}">
@@ -9,10 +9,21 @@
 
 {% block content %}
 <section class="booking-success-page" aria-labelledby="booking-success-title">
-    <div class="booking-success-icon" aria-hidden="true">✓</div>
-    <span class="booking-card-kicker">وب‌دکتر</span>
-    <h1 id="booking-success-title">درخواست نوبت ثبت شد</h1>
-    <p class="booking-success-intro">درخواست شما با موفقیت در سامانه ثبت شده و در انتظار تأیید کلینیک است.</p>
+    <div class="booking-success-icon" aria-hidden="true">{% if appointment.status == 'CONFIRMED' %}✓{% elif appointment.status == 'REJECTED' %}×{% else %}✓{% endif %}</div>
+    <span class="booking-card-kicker">دکتریار</span>
+    {% if appointment.status == 'CONFIRMED' %}
+        <h1 id="booking-success-title">نوبت شما تأیید شده است</h1>
+        <p class="booking-success-intro">پزشک درخواست شما را پذیرفته است. در تاریخ و ساعت ثبت‌شده به کلینیک مراجعه کنید.</p>
+    {% elif appointment.status == 'REJECTED' %}
+        <h1 id="booking-success-title">درخواست نوبت تأیید نشد</h1>
+        <p class="booking-success-intro">پزشک امکان پذیرش این زمان را نداشته است. می‌توانید زمان دیگری را انتخاب کنید.</p>
+    {% elif appointment.status == 'CANCELLED' %}
+        <h1 id="booking-success-title">این نوبت لغو شده است</h1>
+        <p class="booking-success-intro">این درخواست توسط شما لغو شده است.</p>
+    {% else %}
+        <h1 id="booking-success-title">درخواست نوبت ثبت شد</h1>
+        <p class="booking-success-intro">درخواست شما با موفقیت در سامانه ثبت شده و در انتظار تأیید پزشک است.</p>
+    {% endif %}
 
     <div class="booking-receipt">
         <div class="booking-receipt-row">
@@ -39,7 +50,7 @@
         </div>
         <div class="booking-receipt-row booking-receipt-status">
             <span>وضعیت</span>
-            <strong>در انتظار تأیید</strong>
+            <strong>{{ appointment.get_status_display }}</strong>
         </div>
         <div class="booking-receipt-row">
             <span>کد پیگیری</span>
@@ -47,8 +58,8 @@
         </div>
     </div>
 
-    <a class="booking-submit-button booking-success-button" href="{% url 'accounts:doctor_list' %}">
-        بازگشت به فهرست پزشکان <span aria-hidden="true">←</span>
+    <a class="booking-submit-button booking-success-button" href="{% url 'bookings:patient_appointments' %}">
+        مشاهده نوبت‌های من <span aria-hidden="true">←</span>
     </a>
 </section>
 {% endblock %}

@@ -63,7 +63,7 @@ class AuthenticationFlowTests(TestCase):
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(Patient.objects.count(), 1)
 
-    def test_login_redirects_to_dashboard(self):
+    def test_login_redirects_to_doctor_directory(self):
         self.client.post(reverse("accounts:register"), self.registration_data)
 
         response = self.client.post(
@@ -72,6 +72,15 @@ class AuthenticationFlowTests(TestCase):
         )
 
         self.assertRedirects(response, reverse("accounts:doctor_list"))
+
+    def test_failed_login_does_not_authenticate_user(self):
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": "unknown_user", "password": "Wrong-Test-Password"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
 
     def test_dashboard_requires_login(self):
         response = self.client.get(reverse("accounts:dashboard"))
@@ -238,3 +247,129 @@ class DoctorDetailTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "اطلاعات کلینیک برای این پزشک هنوز ثبت نشده است.")
+
+
+class DoctorRegistrationAndSearchTests(TestCase):
+    def setUp(self):
+        self.clinic = Clinic.objects.create(
+            name="کلینیک پزشکان",
+            address="تبریز",
+            phone_number="04112345678",
+        )
+        self.doctor_data = {
+            "first_name": "مریم",
+            "last_name": "کریمی",
+            "username": "maryam_doctor",
+            "specialty": "پوست و مو",
+            "medical_system_number": "DOC-9001",
+            "clinic": str(self.clinic.pk),
+            "password1": "Strong-Test-Password-2026",
+            "password2": "Strong-Test-Password-2026",
+        }
+
+    def test_doctor_registration_creates_inactive_user_and_doctor_profile(self):
+        response = self.client.post(
+            reverse("accounts:doctor_register"),
+            self.doctor_data,
+        )
+        self.assertRedirects(response, reverse("accounts:login"))
+        user = User.objects.get(username="maryam_doctor")
+        doctor = Doctor.objects.get(user=user)
+        self.assertFalse(user.is_active)
+        self.assertEqual(doctor.specialty, "پوست و مو")
+        self.assertEqual(doctor.clinic, self.clinic)
+
+    def test_doctor_registration_rejects_duplicate_medical_system_number(self):
+        existing_user = User.objects.create_user(username="existing_doctor")
+        Doctor.objects.create(
+            user=existing_user,
+            specialty="داخلی",
+            medical_system_number="DOC-9001",
+        )
+        response = self.client.post(
+            reverse("accounts:doctor_register"),
+            self.doctor_data,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "این شماره نظام پزشکی قبلاً ثبت شده است.")
+        self.assertFalse(User.objects.filter(username="maryam_doctor").exists())
+
+    def test_active_doctor_login_redirects_to_doctor_dashboard(self):
+        doctor_user = User.objects.create_user(
+            username="active_doctor_login",
+            password="Strong-Test-Password-2026",
+            is_active=True,
+        )
+        Doctor.objects.create(
+            user=doctor_user,
+            specialty="داخلی",
+            medical_system_number="DOC-9002",
+        )
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": "active_doctor_login", "password": "Strong-Test-Password-2026"},
+        )
+        self.assertRedirects(response, reverse("bookings:doctor_dashboard"))
+
+    def test_doctor_search_matches_name_and_specialty(self):
+        doctor_user = User.objects.create_user(
+            username="search_doctor",
+            first_name="نیلوفر",
+            last_name="احمدی",
+        )
+        doctor = Doctor.objects.create(
+            user=doctor_user,
+            specialty="قلب و عروق",
+            medical_system_number="DOC-9003",
+        )
+        patient_user = User.objects.create_user(username="search_patient")
+        Patient.objects.create(
+            user=patient_user,
+            national_id="1234567801",
+            phone_number="09123456780",
+        )
+        self.client.force_login(patient_user)
+
+        by_name = self.client.get(reverse("accounts:doctor_list"), {"q": "نیلوفر"})
+        self.assertContains(by_name, "نیلوفر احمدی")
+        by_full_name = self.client.get(reverse("accounts:doctor_list"), {"q": "نیلوفر احمدی"})
+        self.assertContains(by_full_name, "نیلوفر احمدی")
+        by_specialty = self.client.get(reverse("accounts:doctor_list"), {"specialty": "قلب و عروق"})
+        self.assertContains(by_specialty, "نیلوفر احمدی")
+        self.assertEqual(doctor.pk, Doctor.objects.get(user=doctor_user).pk)
+
+
+class DoctorAdminApprovalTests(TestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser(
+            username="approval_admin",
+            email="admin@example.test",
+            password="Strong-Admin-Password-2026",
+        )
+        doctor_user = User.objects.create_user(
+            username="pending_doctor",
+            password="Strong-Doctor-Password-2026",
+            first_name="پزشک",
+            last_name="در انتظار",
+            is_active=False,
+        )
+        self.doctor = Doctor.objects.create(
+            user=doctor_user,
+            specialty="داخلی",
+            medical_system_number="PENDING-100",
+        )
+
+    def test_admin_can_activate_pending_doctor_from_doctor_changelist(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("admin:accounts_doctor_changelist"),
+            {
+                "action": "activate_doctor_accounts",
+                "_selected_action": [str(self.doctor.pk)],
+                "index": "0",
+            },
+            follow=True,
+        )
+        self.doctor.user.refresh_from_db()
+        self.assertTrue(self.doctor.user.is_active)
+        self.assertEqual(response.status_code, 200)
